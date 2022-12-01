@@ -250,7 +250,7 @@ $$
 ### EPA
 Expected points added are predicted for every play. 
 
-We use this on a per play basis as our response variable
+We use this on a per play basis as our response variable.
 
 ### Offense vs. Defense EPA
 ```{r message=FALSE, warning=FALSE}
