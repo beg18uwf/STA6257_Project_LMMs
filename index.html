@@ -2,26 +2,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.0.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nick Freeland, Bernice Green, Gary Marmon">
-<meta name="dcterms.date" content="2022-12-01">
+<meta name="dcterms.date" content="2022-12-02">
 
 <title>Linear Mixed Effect Models</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
-ul.task-list li input[type="checkbox"] {
-  width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
-  vertical-align: middle;
-}
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -60,7 +55,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
+code span.bu { } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -73,7 +68,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.im { } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -126,7 +121,7 @@ div.csl-indent {
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-  <nav id="TOC" role="doc-toc" class="toc-active">
+  <nav id="TOC" role="doc-toc">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
@@ -164,10 +159,9 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 1, 2022</p>
+      <p class="date">December 2, 2022</p>
     </div>
   </div>
-  
     
   </div>
   
@@ -197,17 +191,26 @@ div.csl-indent {
 <p>The complex nature of mixed-effects models call into question the robustness of these models and brings more focus to the model assumptions. “Mixed-effects models involve complex fitting procedures and make several assumptions, in particular about the distribution of residual and random effects. Violations of these assumptions are common in real data sets, yet it is not always clear how much these violations matter to accurate and unbiased estimation” <span class="citation" data-cites="schielzeth2020robustness">(<a href="#ref-schielzeth2020robustness" role="doc-biblioref">Schielzeth et al. 2020</a>)</span>. They go on to discuss the consequences of violations of these assumptions and the impact of missing random effect components on model estimates. The study found mixed-effects models to be very robust to violations of these assumptions, finding the estimates were unbiased (although imprecise) and missing random effect predictors had little effect on the fixed effect estimates but had systematic effects on the estimates of random effects <span class="citation" data-cites="schielzeth2020robustness">(<a href="#ref-schielzeth2020robustness" role="doc-biblioref">Schielzeth et al. 2020</a>)</span>.</p>
 <p>Many technical papers have delved into the formulation and implementation of linear mixed-effects models, many following the lead of Bates et al.&nbsp;paper, “Fitting linear mixed-effects models using lme4” (2014). <span class="citation" data-cites="bates2014fitting">Bates et al. (<a href="#ref-bates2014fitting" role="doc-biblioref">2014</a>)</span> outlines the creation and implementation of the lme4 package as an extension of lmer function, which has become the predominant tool in the R language for fitting linear mixed-effect models. As for most model-fitting functions in R, the model is described in an lmer call by a formula, in this case including both fixed- and random-effects terms <span class="citation" data-cites="bates2014fitting">(<a href="#ref-bates2014fitting" role="doc-biblioref">Bates et al. 2014</a>)</span>. The paper describes the structure of the model, the steps in evaluating the profiled deviance or REML criterion, and the structure of classes or types that represents such a model <span class="citation" data-cites="bates2014fitting">(<a href="#ref-bates2014fitting" role="doc-biblioref">Bates et al. 2014</a>)</span>. One of the more controversial design decisions of lme4 has been to omit the output of p values (these can be found using parametric bootstrapping functionality). “While the null distributions (and the sampling distributions of non-null estimates) are asymptotically normal, these distributions are not t distributed for finite size samples — nor are the corresponding null distributions of differences in scaled deviances F distributed.” <span class="citation" data-cites="bates2014fitting">(<a href="#ref-bates2014fitting" role="doc-biblioref">Bates et al. 2014</a>)</span>. A common problem in mixed-model inference is the lack of analytical results for parameter estimates in complex situations including unbalanced or crossed designs. <span class="citation" data-cites="bates2014fitting">(<a href="#ref-bates2014fitting" role="doc-biblioref">Bates et al. 2014</a>)</span> <span class="math inline">\(W_n(x)\)</span> is the sum of weights that belongs to all real numbers. Weights are positive numbers and small if <span class="math inline">\(X_i\)</span> is far from <span class="math inline">\(x\)</span>.</p>
 <!-- #### What is the formula for this model?  -->
-<p>Just as a linear model is described by the distribution of a vector-valued random response variable, Y, whose observed value is <span class="math inline">\(y_{obs}\)</span>, a linear mixed model is described by the distribution of two vector-valued random variables: <span class="math inline">\(Y\)</span>, the response, and <span class="math inline">\(\beta\)</span>, the vector of random effects. In a linear model the distribution of Y is multivariate normal,</p>
+<p>Just as a linear model is described by the distribution of a vector-valued random response variable, Y, whose observed value is <span class="math inline">\(y_{obs}\)</span>, a linear mixed model is described by the distribution of two vector-valued random variables: <span class="math inline">\(Y\)</span>, the response, and <span class="math inline">\(\beta\)</span>, the vector of random effects. In a linear model the distribution of Y is multivariate normal, <span class="citation" data-cites="bates2014fitting">(<a href="#ref-bates2014fitting" role="doc-biblioref">Bates et al. 2014</a>)</span></p>
 <p><span class="math display">\[
 Y ∼ N(Xβ + o, σ^2 W^{-1})
 \]</span></p>
+<p>The linear mixed effects model is represented as:</p>
+<p><span class="math display">\[
+y_i = X_iβ + Z_ib_i + e_i
+\]</span></p>
+<p>where,</p>
+<p><span class="math inline">\(X_i\)</span> is the design matrix of the fixed effects</p>
+<p><span class="math inline">\(\beta\)</span> are the coefficients for the fixed effects</p>
+<p><span class="math inline">\(e_i\)</span> is the error term</p>
+<p>Note the second design matrix <span class="math inline">\(Z_i\)</span> and the subject specific random effects <span class="math inline">\(b_i\)</span>, these <span class="math inline">\(b_i\)</span> enable us to account for different means for each subject, as well as the variation due to each subject. In our model, the subject is the coach. Each coach will play many games across a season, this method allows to account for the variation for each coach due to the multiple “responses,” or games played, by each coach</p>
 <p>Our basic model: <span class="math display">\[epa = plays +  (1+plays|coach)\]</span></p>
 </section>
 <section id="analysis-and-results" class="level2">
 <h2 class="anchored" data-anchor-id="analysis-and-results">Analysis and Results</h2>
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
-<p>Our data featured a play by play analysis for every game in the 2021 season. We are attempting to model the coaches effect using the EPA. We first decided to aggregate the data by game and team. We are assuming that all plays are rush or pass and will be using the pass percentage (pass_pct) to model the two different play options per game. After summarizing, we end up with the following table.</p>
+<p>Our data featured a play by play analysis for every game in the 2021 season. We are attempting to model the coaches effect using the Expected Points Added (EPA). We first decided to aggregate the data by game and team. We are assuming that all plays are rush or pass and will be using the pass percentage (pass_pct) to model the two different play options per game. After summarizing, we end up with the following table.</p>
 <table class="table">
 <colgroup>
 <col style="width: 23%">
@@ -301,7 +304,7 @@ Y ∼ N(Xβ + o, σ^2 W^{-1})
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>NFL offense summaries from the 2021 season including coach and home/away splits.</p>
+<p>Our data is maintained by the nflfastR package in R which contains functions to help scrape NFL play by play data and includes 372 variables on each play of a game for both the offense and defense on the field. The nflfastr package also features models for expected points, win probability, and completion probability for each play. We make use of the expected point added (EPA) prediction and take the mean EPA for each play as our response variable. The load_pcp() function is used to pull in data from the 2021 NFL season and summarized on a per game basis below:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -331,7 +334,7 @@ Y ∼ N(Xβ + o, σ^2 W^{-1})
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">epa_per_play =</span> <span class="fu">round</span>(<span class="fu">mean</span>(pbp.epa), <span class="at">digits =</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Below is the summary of the variables we are choosing to model coach effectiveness.</p>
+<p>This analysis below is the summary of the variables we are choosing to model coach effectiveness. The scale of EPA per play will be important to keep in mind throughout the analysis.</p>
 <table class="table">
 <thead>
 <tr class="header">
@@ -436,34 +439,34 @@ Y ∼ N(Xβ + o, σ^2 W^{-1})
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plotting offensive vs defensive EPA per play</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>offense <span class="ot">&lt;-</span> pbp <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(<span class="at">team =</span> posteam) <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">off_epa =</span> <span class="fu">mean</span>(epa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>defense <span class="ot">&lt;-</span> pbp <span class="sc">%&gt;%</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(<span class="at">team =</span> defteam) <span class="sc">%&gt;%</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">def_epa =</span> <span class="fu">mean</span>(epa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>offense <span class="sc">%&gt;%</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(defense, <span class="at">by =</span> <span class="st">"team"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> off_epa, <span class="at">y =</span> def_epa)) <span class="sc">+</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="sc">-</span><span class="fl">1.5</span>, <span class="at">intercept =</span> <span class="fu">c</span>(.<span class="dv">4</span>, .<span class="dv">3</span>, .<span class="dv">2</span>, .<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span>.<span class="dv">1</span>, <span class="sc">-</span>.<span class="dv">2</span>, <span class="sc">-</span>.<span class="dv">3</span>), <span class="at">alpha =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>o <span class="ot">&lt;-</span> pbp <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">team =</span> posteam) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">off_epa =</span> <span class="fu">mean</span>(epa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> pbp <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">team =</span> defteam) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">def_epa =</span> <span class="fu">mean</span>(epa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>o <span class="sc">%&gt;%</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(d, <span class="at">by =</span> <span class="st">"team"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> off_epa, <span class="at">y =</span> def_epa)) <span class="sc">+</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="sc">-</span><span class="fl">1.5</span>, <span class="at">intercept =</span> <span class="fu">c</span>(.<span class="dv">4</span>, .<span class="dv">3</span>, .<span class="dv">2</span>, .<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span>.<span class="dv">1</span>, <span class="sc">-</span>.<span class="dv">2</span>, <span class="sc">-</span>.<span class="dv">3</span>), <span class="at">alpha =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  nflplotR<span class="sc">::</span><span class="fu">geom_mean_lines</span>(<span class="fu">aes</span>(<span class="at">h_var =</span> off_epa, <span class="at">v_var =</span> def_epa)) <span class="sc">+</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  nflplotR<span class="sc">::</span><span class="fu">geom_nfl_logos</span>(<span class="fu">aes</span>(<span class="at">team_abbr =</span> team), <span class="at">width =</span> <span class="fl">0.07</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Offense EPA/play"</span>,</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Defense EPA/play"</span>,</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"2021 NFL Offensive and Defensive EPA per Play"</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Offense EPA per play"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Defense EPA per play"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"2021 NFL Season Offense vs Defense EPA per Play"</span></span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>)</span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_y_reverse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reverse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>The second set of plots shows us the EPA by coach. We can see that there is a difference in expected points per play based on the coach.</p>
+<p>The second set of plots shows us the EPA by coach. Note the variation between each coaches EPA per play. We must account for this in our model by adding a random effect.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -474,7 +477,7 @@ Y ∼ N(Xβ + o, σ^2 W^{-1})
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This third set of plots models each of our features against our EPA to see if any patterns exist.</p>
@@ -515,7 +518,7 @@ Y ∼ N(Xβ + o, σ^2 W^{-1})
 <span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(p1, p2, p3, p4, p5, p6, p7, p8)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -563,7 +566,7 @@ F-statistic: 180.7 on 5 and 530 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(epa.lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>While there are a few outliers present, we concluded that the overall fit for the selected variables is acceptable. We now want to account for a team’s coach and if a team has home field advantage as random effects.</p>
@@ -660,81 +663,82 @@ attr(,"class")
 <div class="cell-output cell-output-stdout">
 <pre><code>$coach
                  (Intercept)   pass_pct        plays yards_gained shotgun_snaps
-Andy Reid       -0.021359274 -0.3531267 -0.005920478  0.001993818  1.749017e-04
-Arthur Smith    -0.022083270 -0.4142316 -0.005113794  0.002300685 -4.957154e-04
-Bill Belichick  -0.099322247 -0.3212672 -0.005546947  0.002085079  2.004335e-03
-Brandon Staley  -0.039546122 -0.3676882 -0.005228272  0.001907321  9.061088e-04
-Brian Flores    -0.030890088 -0.3405987 -0.005908078  0.001812615  5.210091e-04
-Bruce Arians    -0.006272674 -0.3471742 -0.005303429  0.002162985 -1.977314e-03
-Dan Campbell    -0.032217747 -0.4129932 -0.005060821  0.002025353  3.994585e-04
-Darrell Bevell  -0.028422450 -0.3835692 -0.004884982  0.002069152  9.519509e-05
-David Culley     0.025594793 -0.4434270 -0.005312991  0.002354607 -8.647910e-04
-Frank Reich     -0.029715701 -0.3836629 -0.005006014  0.001926449  7.251137e-04
-Joe Judge       -0.110765025 -0.3685520 -0.005240164  0.002157964  2.324016e-03
-John Harbaugh   -0.067015421 -0.3765759 -0.005454016  0.001696361 -2.332450e-05
-Jon Gruden      -0.044756630 -0.4076117 -0.006117469  0.001690010 -9.575563e-04
-Kevin Stefanski -0.051138914 -0.3929423 -0.005965580  0.001687864  4.413235e-04
-Kliff Kingsbury  0.004432622 -0.3922584 -0.004794546  0.002125746  2.578478e-03
-Kyle Shanahan   -0.066230687 -0.4199778 -0.004845848  0.001959183 -5.513684e-04
-Matt LaFleur    -0.015488584 -0.3646239 -0.006144116  0.001935466 -2.198091e-03
-Matt Nagy       -0.003132449 -0.4570784 -0.005295651  0.001782228 -4.219150e-04
-Matt Rhule      -0.023174589 -0.4234071 -0.005044287  0.002079820  6.407123e-04
-Mike McCarthy   -0.047131005 -0.3794069 -0.006171401  0.001887744 -7.481445e-04
-Mike Tomlin     -0.030174637 -0.3446559 -0.005622578  0.001666302 -1.538403e-04
-Mike Vrabel     -0.063523901 -0.3722853 -0.005228042  0.001768247  5.924738e-04
-Mike Zimmer     -0.036775444 -0.4093844 -0.005798129  0.001581682  7.077865e-04
-Nick Sirianni   -0.005244444 -0.3851682 -0.006040989  0.001610259 -8.872969e-04
-Pete Carroll    -0.032091132 -0.3597116 -0.005703681  0.001806320 -8.171638e-04
-Rich Bisaccia   -0.055956687 -0.4088826 -0.005026224  0.001938268  1.300331e-03
-Robert Saleh    -0.050269051 -0.3914232 -0.006229075  0.001939186 -4.069591e-04
-Ron Rivera      -0.022584212 -0.4070039 -0.005237310  0.002045050 -1.163854e-04
-Sean McDermott  -0.036039894 -0.3386200 -0.006420426  0.002175378  1.036268e-03
-Sean McVay      -0.061218926 -0.3689228 -0.006372047  0.001842214  5.035472e-05
-Sean Payton      0.008634449 -0.4736645 -0.004648304  0.002269573 -1.405569e-03
-Urban Meyer     -0.060969177 -0.4025926 -0.006040554  0.001659990 -4.572785e-04
-Vic Fangio      -0.042185111 -0.3921890 -0.005941879  0.001852138 -1.434763e-03
-Zac Taylor      -0.008608472 -0.4348386 -0.005735469  0.001877140 -2.800729e-03
+Andy Reid        0.006728102 -0.3722720 -0.005903043  0.001981324  1.643708e-04
+Arthur Smith    -0.023457725 -0.4163653 -0.005069429  0.002304498 -3.061528e-04
+Bill Belichick  -0.140352195 -0.3184948 -0.005569778  0.002082485  2.021416e-03
+Brandon Staley  -0.033920695 -0.3747068 -0.005216834  0.001901461  9.572888e-04
+Brian Flores     0.002506320 -0.3522986 -0.005979379  0.001797215  5.451766e-04
+Bruce Arians     0.052625347 -0.3654553 -0.005339229  0.002170506 -2.141573e-03
+Dan Campbell    -0.032633593 -0.4078123 -0.005069111  0.002024292  3.117033e-04
+Darrell Bevell  -0.015657333 -0.3896159 -0.004847335  0.002069363  1.089954e-04
+David Culley     0.063837649 -0.4540726 -0.005290452  0.002363655 -8.149542e-04
+Frank Reich     -0.025375148 -0.3901127 -0.004961856  0.001921123  8.116697e-04
+Joe Judge       -0.178672995 -0.3502147 -0.005309498  0.002136269  2.272439e-03
+John Harbaugh   -0.085785257 -0.3705963 -0.005485294  0.001687278  2.533594e-04
+Jon Gruden      -0.065387302 -0.4016475 -0.006154771  0.001682994 -8.681434e-04
+Kevin Stefanski -0.068462398 -0.3889952 -0.005997136  0.001684096  4.496838e-04
+Kliff Kingsbury  0.051739732 -0.4048163 -0.004771162  0.002124108  2.616412e-03
+Kyle Shanahan   -0.092695066 -0.4018564 -0.004872697  0.001967280 -7.448583e-04
+Matt LaFleur     0.009175643 -0.3892986 -0.006130100  0.001926008 -2.117968e-03
+Matt Nagy       -0.012257161 -0.4602187 -0.005191404  0.001789964 -2.279178e-04
+Matt Rhule      -0.027027035 -0.4215012 -0.005008515  0.002083713  7.042946e-04
+Mike McCarthy   -0.050779149 -0.3789256 -0.006218571  0.001894948 -7.706345e-04
+Mike Tomlin     -0.000739052 -0.3588243 -0.005649494  0.001647816 -1.357040e-04
+Mike Vrabel     -0.092176195 -0.3681597 -0.005167046  0.001774901  8.072048e-04
+Mike Zimmer     -0.044902009 -0.4054232 -0.005807989  0.001576495  6.930357e-04
+Nick Sirianni    0.026657081 -0.3971460 -0.006063984  0.001597985 -8.912411e-04
+Pete Carroll    -0.010958598 -0.3705593 -0.005734104  0.001799123 -8.468388e-04
+Rich Bisaccia   -0.087976366 -0.3991398 -0.005000101  0.001939447  1.351791e-03
+Robert Saleh    -0.060129840 -0.3864619 -0.006329958  0.001930776 -4.410997e-04
+Ron Rivera      -0.014025074 -0.4086765 -0.005228427  0.002043236 -7.844644e-05
+Sean McDermott  -0.014575366 -0.3530997 -0.006428880  0.002164647  1.196181e-03
+Sean McVay      -0.080704890 -0.3672137 -0.006432359  0.001839938  1.301721e-04
+Sean Payton      0.017636375 -0.4697251 -0.004587776  0.002273799 -1.316270e-03
+Urban Meyer     -0.098298356 -0.3945568 -0.006070095  0.001652765 -3.788461e-04
+Vic Fangio      -0.054760804 -0.3936710 -0.005953839  0.001849059 -1.336985e-03
+Zac Taylor      -0.001455182 -0.4349757 -0.005740040  0.001874798 -2.737028e-03
                 no_huddle_snap
-Andy Reid        -5.153587e-03
-Arthur Smith     -5.116493e-03
-Bill Belichick   -4.105297e-03
-Brandon Staley   -3.938147e-03
-Brian Flores     -1.393419e-03
-Bruce Arians     -2.987251e-04
-Dan Campbell     -1.554145e-03
-Darrell Bevell   -3.141212e-03
-David Culley     -3.752354e-03
-Frank Reich      -4.159007e-03
-Joe Judge         4.245112e-04
-John Harbaugh    -4.336517e-04
-Jon Gruden       -2.796963e-03
-Kevin Stefanski  -2.951313e-03
-Kliff Kingsbury  -3.508168e-03
-Kyle Shanahan    -8.386003e-05
-Matt LaFleur     -5.944287e-03
-Matt Nagy        -6.329299e-03
-Matt Rhule       -3.486105e-03
-Mike McCarthy    -1.342771e-03
-Mike Tomlin      -3.603225e-03
-Mike Vrabel      -6.289718e-03
-Mike Zimmer      -2.572787e-03
-Nick Sirianni    -1.725061e-03
-Pete Carroll     -2.467859e-03
-Rich Bisaccia    -3.423562e-03
-Robert Saleh     -1.236904e-03
-Ron Rivera       -2.632732e-03
-Sean McDermott   -5.880602e-03
-Sean McVay       -3.939260e-03
-Sean Payton      -3.208590e-03
-Urban Meyer      -3.335355e-03
-Vic Fangio       -3.842846e-03
-Zac Taylor       -2.823556e-03
+Andy Reid        -0.0058093563
+Arthur Smith     -0.0058624367
+Bill Belichick   -0.0048304130
+Brandon Staley   -0.0044107145
+Brian Flores     -0.0010453179
+Bruce Arians      0.0001820800
+Dan Campbell     -0.0010163447
+Darrell Bevell   -0.0032434967
+David Culley     -0.0036796230
+Frank Reich      -0.0045399996
+Joe Judge         0.0009341072
+John Harbaugh     0.0004770374
+Jon Gruden       -0.0023511710
+Kevin Stefanski  -0.0028770576
+Kliff Kingsbury  -0.0035707260
+Kyle Shanahan     0.0008943490
+Matt LaFleur     -0.0067799681
+Matt Nagy        -0.0071003834
+Matt Rhule       -0.0034785858
+Mike McCarthy    -0.0006280615
+Mike Tomlin      -0.0038637422
+Mike Vrabel      -0.0070569422
+Mike Zimmer      -0.0022987409
+Nick Sirianni    -0.0011921270
+Pete Carroll     -0.0022896070
+Rich Bisaccia    -0.0034292690
+Robert Saleh     -0.0005199952
+Ron Rivera       -0.0023886547
+Sean McDermott   -0.0067992828
+Sean McVay       -0.0042224858
+Sean Payton      -0.0028031571
+Urban Meyer      -0.0032220211
+Vic Fangio       -0.0039772236
+Zac Taylor       -0.0023049594
 
 attr(,"class")
 [1] "coef.mer"</code></pre>
 </div>
 </div>
 <p>This model expects different baseline levels of plays ran and pass_pct. Despite the individual variation of pass_pct, all the values are negative and very close to each other. We see consistency with how often coaches throw the ball. The variation in number of shotgun snaps an offense runs is much wider.</p>
+<p>In order to test the significance of our findings for home field advantage, we take a likelihood ratio approach using ANOVA:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -754,11 +758,9 @@ attr(,"class")
 Models:
 epa.lmer2.null: epa_per_play ~ pass_pct + plays + yards_gained + shotgun_snaps + no_huddle_snap + (1 + pass_pct | coach) + (1 + plays | coach) + (1 + yards_gained | coach) + (1 + shotgun_snaps | coach) + (1 + no_huddle_snap | coach)
 epa.lmer2.full: epa_per_play ~ home_adv + pass_pct + plays + yards_gained + shotgun_snaps + no_huddle_snap + (1 + home_adv | coach) + (1 + pass_pct | coach) + (1 + plays | coach) + (1 + yards_gained | coach) + (1 + shotgun_snaps | coach) + (1 + no_huddle_snap | coach)
-               npar     AIC     BIC logLik deviance Chisq Df Pr(&gt;Chisq)   
-epa.lmer2.null   22 -660.21 -565.96 352.11  -704.21                       
-epa.lmer2.full   26 -666.02 -554.63 359.01  -718.02  13.8  4   0.007961 **
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+               npar     AIC     BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
+epa.lmer2.null   22 -668.99 -574.74 356.50  -712.99                     
+epa.lmer2.full   26 -663.43 -552.04 357.72  -715.43 2.4394  4     0.6555</code></pre>
 </div>
 </div>
 <p>We observe no statistical significance between the models and conclude the effect of home field advantage is minimal to zero.</p>
@@ -790,7 +792,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span> (<span class="at">x =</span> <span class="st">"Pass Percent"</span>, <span class="at">y =</span> <span class="st">"Epa Per Play"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
 </div>
 <details>
 <summary>Code</summary>
@@ -813,7 +815,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span> (<span class="at">x =</span> <span class="st">"Plays"</span>, <span class="at">y =</span> <span class="st">"Epa Per Play"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
@@ -847,13 +849,14 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span> (<span class="at">x =</span> <span class="st">"Plays"</span>, <span class="at">y =</span> <span class="st">"Epa Per Play"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
 <section id="conclusion" class="level3">
 <h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
-<p>Using a linear mixed-effects model, we are able to find the additional effect a team’s coach has on the offenses success, measured by EPA per play. After accounting for the fixed effects plays ran, percentage of pass plays, yards gained, shotgun snaps, and no huddle snaps, our random effect coefficient for coaching showed an additional change 0.02 EPA per play due to coaching and no change in EPA per play due to home field advantage.</p>
+<p>Our first model made use of random intercepts in order to allow the model to account for different baseline levels of epa per play for each coach. While this model allowed us to account the variation in epa per play due to each coach (our grouping factor), it assumes that the effect of our other fixed effects would have the same effect on epa per play for each coach. In order to allow each coach to have a different baseline assumption for these effect we implemeted a random slope model. This model allows for both the random intercept from our first model, but also allows for each coach to have a unique slope for the effect of number of plays ran, pass percentage, number of shotgun snaps, number of no huddle snaps, and yards gained.</p>
+<p>Using this linear mixed-effects model, we are able to find the additional effect a team’s coach has on the offenses success, measured by EPA per play. After accounting for the fixed effects plays ran, percentage of pass plays, yards gained, shotgun snaps, and no huddle snaps, our random effect coefficient for coaching showed an additional change 0.02 EPA per play due to coaching and no change in EPA per play due to home field advantage.</p>
 </section>
 </section>
 <section id="sec-references" class="level2">
@@ -930,24 +933,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
     button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
     setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
       button.setAttribute("title", currentTitle);
       button.classList.remove('code-copy-button-checked');
     }, 1000);
@@ -975,50 +961,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   for (var i=0; i<noterefs.length; i++) {
     const ref = noterefs[i];
     tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      let href = ref.getAttribute('href');
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
     });
   }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
   var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
   for (var i=0; i<bibliorefs.length; i++) {
     const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
       });
-    }
+      return popup.innerHTML;
+    });
   }
 });
 </script>

@@ -149,7 +149,7 @@ team_sum2 <- team_sum1 %>%
 
 ```
 
-This analysis Below is the summary of the variables we are choosing to model coach effectiveness. The scale of EPA per play will be important to keep in mind throughout the analysis. 
+This analysis below is the summary of the variables we are choosing to model coach effectiveness. The scale of EPA per play will be important to keep in mind throughout the analysis. 
 
 | Variable         | Min.  | 1st Qu. | Median | Mean  | 3rd Qu. | Max. |
 |:-----------------|:-----:|:-------:|:------:|:-----:|:-------:|:----:|
@@ -193,7 +193,7 @@ o %>%
   scale_y_reverse()
 ```
 
-The second set of plots shows us the EPA by coach. We can see that there is a difference in expected points per play based on the coach.
+The second set of plots shows us the EPA by coach. Note the variation between each coaches EPA per play. We must account for this in our model by adding a random effect.
 
 ```{r, warning=FALSE, echo=TRUE}
 # Compare EPA by coach
