@@ -55,11 +55,26 @@ Many technical papers have delved into the formulation and implementation of lin
 
 <!-- #### What is the formula for this model?  -->
 
-Just as a linear model is described by the distribution of a vector-valued random response variable, Y, whose observed value is $y_{obs}$, a linear mixed model is described by the distribution of two vector-valued random variables: $Y$, the response, and $\beta$, the vector of random effects. In a linear model the distribution of Y is multivariate normal,
+Just as a linear model is described by the distribution of a vector-valued random response variable, Y, whose observed value is $y_{obs}$, a linear mixed model is described by the distribution of two vector-valued random variables: $Y$, the response, and $\beta$, the vector of random effects. In a linear model the distribution of Y is multivariate normal, [@bates2014fitting]
 
 $$
 Y ∼ N(Xβ + o, σ^2 W^{-1})
 $$
+
+The linear mixed effects model is represented as:
+
+$$
+y_i = X_iβ + Z_ib_i + e_i
+$$
+where, 
+
+$X_i$ is the design matrix of the fixed effects
+
+$\beta$ are the coefficients for the fixed effects
+
+$e_i$ is the error term
+
+Note the second design matrix $Z_i$ and the subject specific random effects $b_i$, these $b_i$ enable us to account for different means for each subject, as well as the variation due to each subject. In our model, the subject is the coach. Each coach will play many games across a season, this method allows to account for the variation for each coach due to the multiple "responses," or games played, by each coach
 
 Our basic model: $$epa = plays +  (1+plays|coach)$$
 
@@ -67,7 +82,7 @@ Our basic model: $$epa = plays +  (1+plays|coach)$$
 
 ### Data
 
-Our data featured a play by play analysis for every game in the 2021 season. We are attempting to model the coaches effect using the EPA. We first decided to aggregate the data by game and team. We are assuming that all plays are rush or pass and will be using the pass percentage (pass_pct) to model the two different play options per game. After summarizing, we end up with the following table.
+Our data featured a play by play analysis for every game in the 2021 season. We are attempting to model the coaches effect using the Expected Points Added (EPA). We first decided to aggregate the data by game and team. We are assuming that all plays are rush or pass and will be using the pass percentage (pass_pct) to model the two different play options per game. After summarizing, we end up with the following table.
 
 | Variable         | Meaning                                                                 |
 |:----------------|:------------------------------------------------------|
@@ -104,7 +119,7 @@ library(lme4)
 library(lmerTest)
 ```
 
-NFL offense summaries from the 2021 season including coach and home/away splits.
+Our data is maintained by the nflfastR package in R which contains functions to help scrape NFL play by play data and includes 372 variables on each play of a game for both the offense and defense on the field. The nflfastr package also features models for expected points, win probability, and completion probability for each play. We make use of the expected point added (EPA) prediction and take the mean EPA for each play as our response variable. The load_pcp() function is used to pull in data from the 2021 NFL season and summarized on a per game basis below:
 
 ```{r message=FALSE, warning=FALSE}
 # loading play by play data from the 2021 NFL season
@@ -134,7 +149,7 @@ team_sum2 <- team_sum1 %>%
 
 ```
 
-Below is the summary of the variables we are choosing to model coach effectiveness.
+This analysis Below is the summary of the variables we are choosing to model coach effectiveness. The scale of EPA per play will be important to keep in mind throughout the analysis. 
 
 | Variable         | Min.  | 1st Qu. | Median | Mean  | 3rd Qu. | Max. |
 |:-----------------|:-----:|:-------:|:------:|:-----:|:-------:|:----:|
@@ -154,28 +169,28 @@ Our first graph shows that there is a difference in EPA per play for each team. 
 
 ```{r message=FALSE, warning=FALSE}
 #plotting offensive vs defensive EPA per play
-offense <- pbp %>%
-  dplyr::group_by(team = posteam) %>%
-  dplyr::summarise(off_epa = mean(epa, na.rm = TRUE))
-defense <- pbp %>%
-  dplyr::group_by(team = defteam) %>%
-  dplyr::summarise(def_epa = mean(epa, na.rm = TRUE))
-offense %>%
-  dplyr::inner_join(defense, by = "team") %>%
-  ggplot2::ggplot(aes(x = off_epa, y = def_epa)) +
-  ggplot2::geom_abline(slope = -1.5, intercept = c(.4, .3, .2, .1, 0, -.1, -.2, -.3), alpha = .2) +
+o <- pbp %>%
+  group_by(team = posteam) %>%
+  summarize(off_epa = mean(epa, na.rm = TRUE))
+d <- pbp %>%
+  group_by(team = defteam) %>%
+  summarize(def_epa = mean(epa, na.rm = TRUE))
+o %>%
+  inner_join(d, by = "team") %>%
+  ggplot(aes(x = off_epa, y = def_epa)) +
+  geom_abline(slope = -1.5, intercept = c(.4, .3, .2, .1, 0, -.1, -.2, -.3), alpha = .2) +
   nflplotR::geom_mean_lines(aes(h_var = off_epa, v_var = def_epa)) +
   nflplotR::geom_nfl_logos(aes(team_abbr = team), width = 0.07, alpha = 0.7) +
-  ggplot2::labs(
-    x = "Offense EPA/play",
-    y = "Defense EPA/play",
-    title = "2021 NFL Offensive and Defensive EPA per Play"
+  labs(
+    x = "Offense EPA per play",
+    y = "Defense EPA per play",
+    title = "2021 NFL Season Offense vs Defense EPA per Play"
   ) +
-  ggplot2::theme_bw() +
-  ggplot2::theme(
+  theme_bw() +
+  theme(
     plot.title = ggplot2::element_text(size = 12, hjust = 0.5, face = "bold")
   ) +
-  ggplot2::scale_y_reverse()
+  scale_y_reverse()
 ```
 
 The second set of plots shows us the EPA by coach. We can see that there is a difference in expected points per play based on the coach.
@@ -277,6 +292,8 @@ coef(epa.lmer2)
 
 This model expects different baseline levels of plays ran and pass_pct. Despite the individual variation of pass_pct, all the values are negative and very close to each other. We see consistency with how often coaches throw the ball. The variation in number of shotgun snaps an offense runs is much wider.
 
+In order to test the significance of our findings for home field advantage, we take a likelihood ratio approach using ANOVA:
+
 ```{r message=FALSE, warning=FALSE}
 # Testing for significance between models with and without home field advantage
 epa.lmer2.null = lmer(epa_per_play ~ pass_pct + plays + yards_gained + shotgun_snaps + no_huddle_snap +
@@ -366,9 +383,12 @@ ggplot(team_sum2f, aes(x = plays, y = epa_per_play, color=home_adv)) +
   labs (x = "Plays", y = "Epa Per Play")
 ```
 
+
 ### Conclusion
 
-Using a linear mixed-effects model, we are able to find the additional effect a team's coach has on the offenses success, measured by EPA per play. After accounting for the fixed effects plays ran, percentage of pass plays, yards gained, shotgun snaps, and no huddle snaps, our random effect coefficient for coaching showed an additional change 0.02 EPA per play due to coaching and no change in EPA per play due to home field advantage.
+Our first model made use of random intercepts in order to allow the model to account for different baseline levels of epa per play for each coach. While this model allowed us to account the variation in epa per play due to each coach (our grouping factor), it assumes that the effect of our other fixed effects would have the same effect on epa per play for each coach. In order to allow each coach to have a different baseline assumption for these effect we implemeted a random slope model. This model allows for both the random intercept from our first model, but also allows for each coach to have a unique slope for the effect of number of plays ran, pass percentage, number of shotgun snaps, number of no huddle snaps, and yards gained.
+
+Using this linear mixed-effects model, we are able to find the additional effect a team's coach has on the offenses success, measured by EPA per play. After accounting for the fixed effects plays ran, percentage of pass plays, yards gained, shotgun snaps, and no huddle snaps, our random effect coefficient for coaching showed an additional change 0.02 EPA per play due to coaching and no change in EPA per play due to home field advantage.
 
 ## References {#sec-references}
 
